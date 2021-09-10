@@ -1,0 +1,20 @@
+node("ansible_docker"){
+    stage("Git checkout"){
+        git credentialsId: 'GITHUB_SSH_KEY', url: 'git@github.com:sanya-nett/example-playbook.git'
+    }
+    stage("Check ssh key"){
+        secret_check=true
+    }
+    stage("Run playbook"){
+        if (secret_check){
+            sh '''
+            ansible-galaxy install -r requirements.yml -p roles
+            ansible-playbook site.yml -i inventory/prod.yml'''
+        }
+        else{
+            echo 'no more keys'
+        }
+        
+    }
+}
+
